@@ -5,13 +5,17 @@ import { UserMenu } from "./UserMenu";
 
 interface HeaderProps {
   title?: string;
+  subtitle?: string;
 }
 
-export function Header({ title }: HeaderProps) {
+export function Header({ title, subtitle }: HeaderProps) {
   return (
     <header className="flex items-center h-14 px-4 border-b border-slate-200 bg-white gap-4">
       {title && (
-        <h1 className="text-base font-semibold text-slate-900 shrink-0">{title}</h1>
+        <div className="shrink-0">
+          <h1 className="text-base font-semibold text-slate-900 leading-tight">{title}</h1>
+          {subtitle && <p className="text-xs text-slate-400 leading-tight">{subtitle}</p>}
+        </div>
       )}
 
       <div className="flex-1 max-w-sm relative">

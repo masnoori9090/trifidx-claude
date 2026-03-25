@@ -12,7 +12,7 @@ export default async function LeadsPage() {
 
   return (
     <>
-      <Header title="Leads" />
+      <Header title="Leads" subtitle="Manage your leads and prospects" />
       <LeadsClient users={users || []} />
     </>
   );

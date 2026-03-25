@@ -1,27 +1,14 @@
 "use client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StatusBadge } from "@/components/shared/StatusBadge";
-import { getInitials, LEAD_SOURCE_LABELS } from "@/lib/utils";
+import { cn, LEAD_SOURCE_COLORS, LEAD_SOURCE_LABELS, LEAD_STATUS_COLORS, LEAD_STATUS_LABELS } from "@/lib/utils";
 import type { Lead } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import { AlertOctagon } from "lucide-react";
+import { Flame, Trash2 } from "lucide-react";
 
 interface LeadsTableProps {
   leads: Lead[];
   loading: boolean;
   onRowClick: (lead: Lead) => void;
 }
-
-const COLUMNS = [
-  { key: "business_name", label: "Business", width: "w-48" },
-  { key: "contact", label: "Contact", width: "w-36" },
-  { key: "email", label: "Email", width: "w-44" },
-  { key: "lead_source", label: "Source", width: "w-28" },
-  { key: "country", label: "Country", width: "w-28" },
-  { key: "status", label: "Status", width: "w-28" },
-  { key: "owner", label: "Assigned To", width: "w-36" },
-  { key: "actions", label: "", width: "w-10" },
-];
 
 export function LeadsTable({ leads, loading, onRowClick }: LeadsTableProps) {
   if (loading) {
@@ -45,19 +32,19 @@ export function LeadsTable({ leads, loading, onRowClick }: LeadsTableProps) {
 
   return (
     <table className="w-full text-sm">
-      <thead className="sticky top-0 bg-slate-50 z-10 border-b border-slate-200">
+      <thead className="sticky top-0 bg-white z-10 border-b border-slate-200">
         <tr>
-          {COLUMNS.map((col) => (
-            <th
-              key={col.key}
-              className={cn(
-                "px-4 py-2.5 text-left text-xs font-medium text-slate-500 uppercase tracking-wide",
-                col.width
-              )}
-            >
-              {col.label}
-            </th>
-          ))}
+          <th className="px-4 py-2.5 w-8">
+            <input type="checkbox" className="rounded border-slate-300" />
+          </th>
+          <th className="px-4 py-2.5 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">Lead / Business Name</th>
+          <th className="px-4 py-2.5 text-left text-xs font-medium text-slate-500 uppercase tracking-wide w-28">Source</th>
+          <th className="px-4 py-2.5 text-left text-xs font-medium text-slate-500 uppercase tracking-wide w-28">Industry</th>
+          <th className="px-4 py-2.5 text-left text-xs font-medium text-slate-500 uppercase tracking-wide w-24">Status</th>
+          <th className="px-4 py-2.5 text-left text-xs font-medium text-slate-500 uppercase tracking-wide w-44">Assigned To</th>
+          <th className="px-4 py-2.5 text-left text-xs font-medium text-slate-500 uppercase tracking-wide w-28">Country</th>
+          <th className="px-4 py-2.5 text-left text-xs font-medium text-slate-500 uppercase tracking-wide w-20"></th>
+          <th className="px-4 py-2.5 text-left text-xs font-medium text-slate-500 uppercase tracking-wide w-20">Actions</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-slate-100">
@@ -69,51 +56,80 @@ export function LeadsTable({ leads, loading, onRowClick }: LeadsTableProps) {
   );
 }
 
-function LeadRow({
-  lead,
-  onClick,
-}: {
-  lead: Lead;
-  onClick: () => void;
-}) {
-  const contactName = [lead.first_name, lead.last_name].filter(Boolean).join(" ") || "—";
-  const ownerName = lead.owner?.full_name || "Unassigned";
+function LeadRow({ lead, onClick }: { lead: Lead; onClick: () => void }) {
+  const displayName = lead.instagram_handle
+    ? `${lead.business_name} // @${lead.instagram_handle.replace(/^@/, "")}`
+    : lead.business_name;
+
+  const ownerEmail = lead.owner?.email || "—";
+  const isClaimed = !!lead.claimed_at;
 
   return (
     <tr
       onClick={onClick}
       className="hover:bg-slate-50 cursor-pointer transition-colors group"
     >
-      <td className="px-4 py-3 font-medium text-slate-900 max-w-0 w-48">
-        <div className="flex items-center gap-1.5 truncate">
+      <td className="px-4 py-3 w-8" onClick={(e) => e.stopPropagation()}>
+        <input type="checkbox" className="rounded border-slate-300" />
+      </td>
+      <td className="px-4 py-3 font-medium text-slate-900 max-w-0 min-w-[200px]">
+        <div className="flex items-center gap-1.5">
           {lead.do_not_approach && (
-            <span title="Do Not Approach"><AlertOctagon className="h-3.5 w-3.5 text-red-500 shrink-0" /></span>
+            <span title="Do Not Approach" className="text-red-500 text-xs">⚠</span>
           )}
-          <span className="truncate">{lead.business_name}</span>
-        </div>
-      </td>
-      <td className="px-4 py-3 text-slate-600 truncate max-w-0 w-36">
-        {contactName}
-      </td>
-      <td className="px-4 py-3 text-slate-500 truncate max-w-0 w-44">
-        {lead.email || "—"}
-      </td>
-      <td className="px-4 py-3 text-slate-500 w-28">
-        {LEAD_SOURCE_LABELS[lead.lead_source] || lead.lead_source}
-      </td>
-      <td className="px-4 py-3 text-slate-500 w-28">{lead.country || "—"}</td>
-      <td className="px-4 py-3 w-28">
-        <StatusBadge status={lead.status} />
-      </td>
-      <td className="px-4 py-3 w-36">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-medium shrink-0">
-            {lead.owner ? getInitials(ownerName) : "—"}
+          <span className="truncate text-sm">
+            {displayName}
           </span>
-          <span className="text-xs text-slate-600 truncate">{ownerName}</span>
         </div>
       </td>
-      <td className="px-4 py-3 w-10" />
+      <td className="px-4 py-3 w-28">
+        <span className={cn(
+          "text-xs px-2 py-0.5 rounded font-medium",
+          LEAD_SOURCE_COLORS[lead.lead_source] || "bg-slate-100 text-slate-600"
+        )}>
+          {LEAD_SOURCE_LABELS[lead.lead_source] || lead.lead_source}
+        </span>
+      </td>
+      <td className="px-4 py-3 text-slate-500 text-sm w-28 truncate">
+        {lead.industry || "Other"}
+      </td>
+      <td className="px-4 py-3 w-24">
+        <span className={cn(
+          "text-xs px-2 py-0.5 rounded font-medium",
+          LEAD_STATUS_COLORS[lead.status] || "bg-slate-100 text-slate-600"
+        )}>
+          {LEAD_STATUS_LABELS[lead.status] || lead.status}
+        </span>
+      </td>
+      <td className="px-4 py-3 text-slate-500 text-xs w-44 truncate">
+        {ownerEmail}
+      </td>
+      <td className="px-4 py-3 text-slate-500 text-sm w-28">
+        {lead.country || "—"}
+      </td>
+      <td className="px-4 py-3 w-20">
+        {isClaimed && (
+          <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-medium">
+            Claimed
+          </span>
+        )}
+      </td>
+      <td className="px-4 py-3 w-20" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            className="text-orange-400 hover:text-orange-600 transition-colors"
+            title="Flag lead"
+          >
+            <Flame className="h-4 w-4" />
+          </button>
+          <button
+            className="text-red-400 hover:text-red-600 transition-colors"
+            title="Delete lead"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      </td>
     </tr>
   );
 }

@@ -16,14 +16,19 @@ export type LeadSource =
   | "other";
 export type LeadType = "hot" | "warm" | "cold";
 export type DealStage =
-  | "discovery"
-  | "proposal"
+  | "new_lead"
+  | "attempting_contact"
+  | "contacted"
+  | "qualified"
+  | "meeting_booked"
+  | "meeting_completed"
+  | "proposal_sent"
   | "negotiation"
-  | "contract"
   | "closed_won"
   | "closed_lost";
 export type EventType = "meeting" | "phone_call" | "follow_up" | "demo" | "other";
 export type EventStatus = "scheduled" | "completed" | "cancelled" | "no_show";
+export type QuotationStatus = "draft" | "approved" | "rejected" | "sent";
 
 export interface User {
   id: string;
@@ -113,6 +118,12 @@ export interface Deal {
   lead_id?: string | null;
   client_id?: string | null;
   company_id?: string | null;
+  company_name?: string | null;
+  contact_name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  country?: string | null;
+  service?: string | null;
   stage: DealStage;
   value?: number | null;
   currency: string;
@@ -173,33 +184,57 @@ export interface ActivityLog {
   performer?: User | null;
 }
 
-// Supabase Database type (simplified — expand as needed)
+export interface QuotationLineItem {
+  id: string;
+  quotation_id: string;
+  description?: string | null;
+  duration: number;
+  monthly_rate: number;
+  amount: number;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface Quotation {
+  id: string;
+  quote_number: string;
+  template: string;
+  status: QuotationStatus;
+  client_name?: string | null;
+  country?: string | null;
+  currency: string;
+  vat_option: string;
+  quote_date: string;
+  valid_until?: string | null;
+  payment_terms?: string | null;
+  notes?: string | null;
+  subtotal: number;
+  tax_amount: number;
+  total: number;
+  created_by?: string | null;
+  approved_by?: string | null;
+  approved_at?: string | null;
+  deleted_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined
+  creator?: User | null;
+  line_items?: QuotationLineItem[];
+}
+
+// Supabase Database type (simplified)
 export type Database = {
   public: {
     Tables: {
       users: { Row: User; Insert: Partial<User>; Update: Partial<User> };
       leads: { Row: Lead; Insert: Partial<Lead>; Update: Partial<Lead> };
-      contacts: {
-        Row: Contact;
-        Insert: Partial<Contact>;
-        Update: Partial<Contact>;
-      };
-      companies: {
-        Row: Company;
-        Insert: Partial<Company>;
-        Update: Partial<Company>;
-      };
+      contacts: { Row: Contact; Insert: Partial<Contact>; Update: Partial<Contact> };
+      companies: { Row: Company; Insert: Partial<Company>; Update: Partial<Company> };
       deals: { Row: Deal; Insert: Partial<Deal>; Update: Partial<Deal> };
-      calendar_events: {
-        Row: CalendarEvent;
-        Insert: Partial<CalendarEvent>;
-        Update: Partial<CalendarEvent>;
-      };
-      activity_log: {
-        Row: ActivityLog;
-        Insert: Partial<ActivityLog>;
-        Update: Partial<ActivityLog>;
-      };
+      calendar_events: { Row: CalendarEvent; Insert: Partial<CalendarEvent>; Update: Partial<CalendarEvent> };
+      activity_log: { Row: ActivityLog; Insert: Partial<ActivityLog>; Update: Partial<ActivityLog> };
+      quotations: { Row: Quotation; Insert: Partial<Quotation>; Update: Partial<Quotation> };
+      quotation_line_items: { Row: QuotationLineItem; Insert: Partial<QuotationLineItem>; Update: Partial<QuotationLineItem> };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

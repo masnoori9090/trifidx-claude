@@ -5,10 +5,14 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Users,
-  GitBranch,
+  TrendingUp,
+  FileText,
+  UserCircle,
   Calendar,
-  Handshake,
-  Building2,
+  Package,
+  BookOpen,
+  BarChart3,
+  UserCheck,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -18,10 +22,14 @@ import { useState } from "react";
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/leads", label: "Leads", icon: Users },
-  { href: "/pipeline", label: "Pipeline", icon: GitBranch },
+  { href: "/pipeline", label: "Sales Pipeline", icon: TrendingUp },
+  { href: "/quotations", label: "Quotations", icon: FileText },
+  { href: "/clients", label: "My Clients", icon: UserCircle },
   { href: "/calendar", label: "Calendar", icon: Calendar },
-  { href: "/deals", label: "Deals", icon: Handshake },
-  { href: "/clients", label: "Clients", icon: Building2 },
+  { href: "/assets", label: "Assets", icon: Package },
+  { href: "/training", label: "Training", icon: BookOpen },
+  { href: "/reports", label: "Reports", icon: BarChart3 },
+  { href: "/user-approvals", label: "User Approvals", icon: UserCheck },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -48,7 +56,7 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
         {!collapsed && (
           <span className="ml-3 text-white font-semibold text-sm truncate">
-            Trifid CRM
+            Trifid X
           </span>
         )}
       </div>
@@ -86,7 +94,10 @@ export function Sidebar({ className }: SidebarProps) {
           {collapsed ? (
             <ChevronRight className="h-4 w-4" />
           ) : (
-            <ChevronLeft className="h-4 w-4" />
+            <>
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              <span className="text-xs">Collapse</span>
+            </>
           )}
         </button>
       </div>

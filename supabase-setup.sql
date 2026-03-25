@@ -94,14 +94,24 @@ CREATE INDEX IF NOT EXISTS idx_leads_country ON public.leads(country);
 CREATE INDEX IF NOT EXISTS idx_leads_source ON public.leads(lead_source);
 CREATE INDEX IF NOT EXISTS idx_leads_deleted ON public.leads(deleted_at) WHERE deleted_at IS NULL;
 
--- DEALS
+-- DEALS (updated with new stages and extra fields)
 CREATE TABLE IF NOT EXISTS public.deals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   lead_id UUID REFERENCES public.leads(id),
   client_id UUID,
   company_id UUID REFERENCES public.companies(id),
-  stage TEXT NOT NULL DEFAULT 'discovery' CHECK (stage IN ('discovery','proposal','negotiation','contract','closed_won','closed_lost')),
+  company_name TEXT,
+  contact_name TEXT,
+  phone TEXT,
+  email TEXT,
+  country TEXT,
+  service TEXT,
+  stage TEXT NOT NULL DEFAULT 'new_lead' CHECK (stage IN (
+    'new_lead','attempting_contact','contacted','qualified',
+    'meeting_booked','meeting_completed','proposal_sent','negotiation',
+    'closed_won','closed_lost'
+  )),
   value DECIMAL(12,2),
   currency TEXT DEFAULT 'AED',
   probability INTEGER DEFAULT 0 CHECK (probability >= 0 AND probability <= 100),
@@ -164,6 +174,48 @@ CREATE TABLE IF NOT EXISTS public.activity_log (
 
 CREATE INDEX IF NOT EXISTS idx_activity_entity ON public.activity_log(entity_type, entity_id);
 
+-- QUOTATIONS
+CREATE TABLE IF NOT EXISTS public.quotations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  quote_number TEXT NOT NULL UNIQUE,
+  template TEXT NOT NULL DEFAULT 'Trifid Media',
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','approved','rejected','sent')),
+  client_name TEXT,
+  country TEXT,
+  currency TEXT DEFAULT 'USD',
+  vat_option TEXT DEFAULT '5_vat',
+  quote_date DATE DEFAULT CURRENT_DATE,
+  valid_until DATE,
+  payment_terms TEXT DEFAULT '100% advance payment',
+  notes TEXT,
+  subtotal DECIMAL(12,2) DEFAULT 0,
+  tax_amount DECIMAL(12,2) DEFAULT 0,
+  total DECIMAL(12,2) DEFAULT 0,
+  created_by UUID REFERENCES public.users(id),
+  approved_by UUID REFERENCES public.users(id),
+  approved_at TIMESTAMPTZ,
+  deleted_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_quotations_status ON public.quotations(status);
+CREATE INDEX IF NOT EXISTS idx_quotations_created_by ON public.quotations(created_by);
+
+-- QUOTATION LINE ITEMS
+CREATE TABLE IF NOT EXISTS public.quotation_line_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  quotation_id UUID NOT NULL REFERENCES public.quotations(id) ON DELETE CASCADE,
+  description TEXT,
+  duration INTEGER DEFAULT 1,
+  monthly_rate DECIMAL(12,2) DEFAULT 0,
+  amount DECIMAL(12,2) DEFAULT 0,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_line_items_quotation ON public.quotation_line_items(quotation_id);
+
 -- ============================================================
 -- ROW LEVEL SECURITY
 -- ============================================================
@@ -174,6 +226,8 @@ ALTER TABLE public.calendar_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contacts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.companies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quotations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quotation_line_items ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if any, then recreate
 DO $$ BEGIN
@@ -192,6 +246,10 @@ DO $$ BEGIN
   DROP POLICY IF EXISTS "contacts_all" ON public.contacts;
   DROP POLICY IF EXISTS "companies_all" ON public.companies;
   DROP POLICY IF EXISTS "activity_all" ON public.activity_log;
+  DROP POLICY IF EXISTS "quotations_read" ON public.quotations;
+  DROP POLICY IF EXISTS "quotations_insert" ON public.quotations;
+  DROP POLICY IF EXISTS "quotations_update" ON public.quotations;
+  DROP POLICY IF EXISTS "line_items_all" ON public.quotation_line_items;
 END $$;
 
 -- Users: authenticated can read all, update own
@@ -232,12 +290,24 @@ CREATE POLICY "companies_all" ON public.companies FOR ALL TO authenticated USING
 -- Activity log: full access
 CREATE POLICY "activity_all" ON public.activity_log FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+-- Quotations: all authenticated can read, insert own, update own or admin
+CREATE POLICY "quotations_read" ON public.quotations FOR SELECT TO authenticated USING (deleted_at IS NULL);
+CREATE POLICY "quotations_insert" ON public.quotations FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "quotations_update" ON public.quotations FOR UPDATE TO authenticated USING (
+  created_by = auth.uid() OR
+  EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('admin','manager'))
+);
+
+-- Quotation line items: full access (protected via quotation)
+CREATE POLICY "line_items_all" ON public.quotation_line_items FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
 -- ============================================================
 -- REALTIME
 -- ============================================================
 ALTER PUBLICATION supabase_realtime ADD TABLE public.leads;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.deals;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.calendar_events;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.quotations;
 
 -- ============================================================
 -- TRIGGER: auto-sync auth.users → public.users on signup

@@ -1,28 +1,30 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
+  DragDropContext, Droppable, Draggable, DropResult,
 } from "@hello-pangea/dnd";
 import { createClient } from "@/lib/supabase/client";
 import { KanbanColumn } from "./KanbanColumn";
 import { KanbanCard } from "./KanbanCard";
-import { LeadDetail } from "@/components/leads/LeadDetail";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import type { Lead, User, LeadStatus } from "@/lib/types";
-import { LEAD_STATUS_LABELS } from "@/lib/utils";
+import type { Deal, User, DealStage } from "@/lib/types";
+import {
+  DEAL_STAGE_LABELS, formatCurrency,
+} from "@/lib/utils";
+import { Plus, RefreshCw, AlertTriangle, TrendingDown } from "lucide-react";
+import { AddDealModal } from "@/components/deals/AddDealModal";
 
-const COLUMNS: LeadStatus[] = [
-  "new",
+const STAGES: DealStage[] = [
+  "new_lead",
+  "attempting_contact",
   "contacted",
   "qualified",
-  "proposal",
+  "meeting_booked",
+  "meeting_completed",
+  "proposal_sent",
   "negotiation",
-  "closed_won",
-  "closed_lost",
 ];
 
 interface KanbanBoardProps {
@@ -30,165 +32,230 @@ interface KanbanBoardProps {
   currentUserId?: string;
 }
 
-type LeadsByStatus = Record<string, Lead[]>;
+type DealsByStage = Record<string, Deal[]>;
 
 export function KanbanBoard({ users, currentUserId }: KanbanBoardProps) {
-  const [leadsByStatus, setLeadsByStatus] = useState<LeadsByStatus>({});
+  const [dealsByStage, setDealsByStage] = useState<DealsByStage>({});
   const [loading, setLoading] = useState(true);
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [ownerFilter, setOwnerFilter] = useState("");
+  const [viewFilter, setViewFilter] = useState<"mine" | "all">("mine");
+  const [addModalOpen, setAddModalOpen] = useState(false);
 
-  const fetchLeads = useCallback(async () => {
+  const fetchDeals = useCallback(async () => {
     const supabase = createClient();
     let query = supabase
-      .from("leads")
-      .select(
-        "*, owner:users!leads_owner_id_fkey(id, full_name, email, avatar_url)"
-      )
+      .from("deals")
+      .select("*, owner:users!deals_owner_id_fkey(id, full_name, email, avatar_url)")
       .is("deleted_at", null)
       .order("updated_at", { ascending: false });
 
-    if (ownerFilter) query = query.eq("owner_id", ownerFilter);
+    if (viewFilter === "mine" && currentUserId) {
+      query = query.eq("owner_id", currentUserId);
+    }
 
     const { data } = await query;
-    const grouped: LeadsByStatus = {};
-    COLUMNS.forEach((col) => (grouped[col] = []));
-    (data || []).forEach((lead) => {
-      const status = lead.status as LeadStatus;
-      if (grouped[status]) grouped[status].push(lead as Lead);
+    const grouped: DealsByStage = {};
+    STAGES.forEach((s) => (grouped[s] = []));
+    (data || []).forEach((deal) => {
+      const stage = deal.stage as DealStage;
+      if (grouped[stage]) grouped[stage].push(deal as Deal);
     });
-    setLeadsByStatus(grouped);
+    setDealsByStage(grouped);
     setLoading(false);
-  }, [ownerFilter]);
+  }, [viewFilter, currentUserId]);
 
   useEffect(() => {
-    fetchLeads();
-  }, [fetchLeads]);
+    fetchDeals();
+  }, [fetchDeals]);
 
   // Realtime subscription
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
-      .channel("leads_pipeline")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "leads" },
-        () => fetchLeads()
-      )
+      .channel("deals_pipeline")
+      .on("postgres_changes", { event: "*", schema: "public", table: "deals" }, () => fetchDeals())
       .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchLeads]);
+    return () => { supabase.removeChannel(channel); };
+  }, [fetchDeals]);
 
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, draggableId } = result;
     if (!destination || source.droppableId === destination.droppableId) return;
 
-    const sourceStatus = source.droppableId as LeadStatus;
-    const destStatus = destination.droppableId as LeadStatus;
+    const sourceStage = source.droppableId as DealStage;
+    const destStage = destination.droppableId as DealStage;
 
-    // Optimistic update
-    setLeadsByStatus((prev) => {
-      const sourceCopy = [...prev[sourceStatus]];
-      const destCopy = [...prev[destStatus]];
+    setDealsByStage((prev) => {
+      const sourceCopy = [...prev[sourceStage]];
+      const destCopy = [...(prev[destStage] || [])];
       const [moved] = sourceCopy.splice(source.index, 1);
-      const updatedLead = { ...moved, status: destStatus };
-      destCopy.splice(destination.index, 0, updatedLead);
-      return { ...prev, [sourceStatus]: sourceCopy, [destStatus]: destCopy };
+      destCopy.splice(destination.index, 0, { ...moved, stage: destStage });
+      return { ...prev, [sourceStage]: sourceCopy, [destStage]: destCopy };
     });
 
     const supabase = createClient();
     const { error } = await supabase
-      .from("leads")
-      .update({ status: destStatus, updated_at: new Date().toISOString() })
+      .from("deals")
+      .update({ stage: destStage, updated_at: new Date().toISOString() })
       .eq("id", draggableId);
 
     if (error) {
-      toast.error("Failed to update status");
-      fetchLeads(); // revert
+      toast.error("Failed to update stage");
+      fetchDeals();
     }
   };
 
+  // Stats
+  const totalDeals = STAGES.reduce((s, stage) => s + (dealsByStage[stage]?.length || 0), 0);
+  const pipelineValue = STAGES.reduce((s, stage) => {
+    return s + (dealsByStage[stage] || []).reduce((sum, d) => sum + (d.value || 0), 0);
+  }, 0);
+  const atRisk = Object.values(dealsByStage).flat().filter((d) => {
+    const daysSince = (Date.now() - new Date(d.updated_at).getTime()) / (1000 * 60 * 60 * 24);
+    return daysSince > 7;
+  }).length;
+  const avgAge = totalDeals > 0
+    ? Math.round(Object.values(dealsByStage).flat().reduce((s, d) => {
+        return s + (Date.now() - new Date(d.created_at).getTime()) / (1000 * 60 * 60 * 24);
+      }, 0) / totalDeals)
+    : 0;
+
   if (loading) {
     return (
-      <div className="flex gap-4 p-6 overflow-x-auto">
-        {COLUMNS.map((col) => (
-          <div key={col} className="flex-shrink-0 w-64 space-y-2">
-            <Skeleton className="h-8 w-full" />
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-24 w-full rounded-xl" />
-            ))}
-          </div>
-        ))}
+      <div className="p-6">
+        <div className="flex gap-4 overflow-x-auto">
+          {STAGES.map((s) => (
+            <div key={s} className="flex-shrink-0 w-60 space-y-2">
+              <Skeleton className="h-16 w-full rounded-xl" />
+              {[1, 2].map((i) => <Skeleton key={i} className="h-20 w-full rounded-xl" />)}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-3 p-6 overflow-x-auto h-full pb-8">
-          {COLUMNS.map((status) => {
-            const leads = leadsByStatus[status] || [];
-            return (
-              <KanbanColumn
-                key={status}
-                status={status}
-                label={LEAD_STATUS_LABELS[status]}
-                count={leads.length}
-              >
-                <Droppable droppableId={status}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className={`flex-1 space-y-2 min-h-[100px] rounded-lg p-1 transition-colors ${
-                        snapshot.isDraggingOver ? "bg-indigo-50" : ""
-                      }`}
-                    >
-                      {leads.map((lead, index) => (
-                        <Draggable
-                          key={lead.id}
-                          draggableId={lead.id}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <KanbanCard
-                                lead={lead}
-                                isDragging={snapshot.isDragging}
-                                onClick={() => setSelectedLead(lead)}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </KanbanColumn>
-            );
-          })}
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="px-6 py-3 bg-white border-b border-slate-200 flex items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-slate-900">My Pipeline</h2>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-slate-400">{totalDeals} deals</span>
+          <div className="flex rounded-lg border border-slate-200 overflow-hidden">
+            <button
+              onClick={() => setViewFilter("mine")}
+              className={`px-3 py-1 text-xs font-medium transition-colors ${viewFilter === "mine" ? "bg-slate-900 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
+            >
+              My Pipeline
+            </button>
+            <button
+              onClick={() => setViewFilter("all")}
+              className={`px-3 py-1 text-xs font-medium transition-colors ${viewFilter === "all" ? "bg-slate-900 text-white" : "bg-white text-slate-600 hover:bg-slate-50"}`}
+            >
+              All
+            </button>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => fetchDeals()} className="h-8">
+            <RefreshCw className="h-3.5 w-3.5" />
+          </Button>
+          <Button size="sm" onClick={() => setAddModalOpen(true)} className="h-8">
+            <Plus className="h-4 w-4" />
+            Deal
+          </Button>
         </div>
-      </DragDropContext>
+      </div>
 
-      {selectedLead && (
-        <LeadDetail
-          lead={selectedLead}
-          users={users}
-          onClose={() => setSelectedLead(null)}
-          onUpdated={(updated) => {
-            setSelectedLead(updated);
-            fetchLeads();
-          }}
-        />
-      )}
-    </>
+      {/* Stats bar */}
+      <div className="px-6 py-2.5 bg-white border-b border-slate-100 flex items-center gap-6 text-sm overflow-x-auto">
+        <div>
+          <span className="text-xs text-slate-400 block">Total Deals</span>
+          <span className="font-semibold text-slate-900">{totalDeals}</span>
+        </div>
+        <div>
+          <span className="text-xs text-slate-400 block">Pipeline Value</span>
+          <span className="font-semibold text-slate-900">{formatCurrency(pipelineValue, "AED")}</span>
+        </div>
+        <div>
+          <span className="text-xs text-slate-400 block">Won This Month</span>
+          <span className="font-semibold text-slate-900">0 — AED 0</span>
+        </div>
+        <div>
+          <span className="text-xs text-slate-400 block flex items-center gap-1">
+            <AlertTriangle className="h-3 w-3 text-amber-500" />
+            At Risk
+          </span>
+          <span className="font-semibold text-amber-600">{atRisk}</span>
+        </div>
+        <div>
+          <span className="text-xs text-slate-400 block">Avg Deal Age</span>
+          <span className="font-semibold text-slate-900">{avgAge}d</span>
+        </div>
+        <div>
+          <span className="text-xs text-slate-400 block">Pipeline Health</span>
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded ${atRisk > 0 ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"}`}>
+            {atRisk > 0 ? "At Risk" : "Healthy"}
+          </span>
+        </div>
+      </div>
+
+      {/* Kanban */}
+      <div className="flex-1 overflow-hidden">
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className="flex gap-3 p-4 overflow-x-auto h-full pb-8">
+            {STAGES.map((stage) => {
+              const deals = dealsByStage[stage] || [];
+              const stageValue = deals.reduce((s, d) => s + (d.value || 0), 0);
+              return (
+                <KanbanColumn
+                  key={stage}
+                  stage={stage}
+                  label={DEAL_STAGE_LABELS[stage]}
+                  count={deals.length}
+                  value={stageValue}
+                  currency="AED"
+                >
+                  <Droppable droppableId={stage}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className={`flex-1 space-y-2 min-h-[60px] rounded-lg p-1 transition-colors ${snapshot.isDraggingOver ? "bg-indigo-50" : ""}`}
+                      >
+                        {deals.map((deal, index) => (
+                          <Draggable key={deal.id} draggableId={deal.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <KanbanCard
+                                  deal={deal}
+                                  isDragging={snapshot.isDragging}
+                                  onClick={() => {}}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </KanbanColumn>
+              );
+            })}
+          </div>
+        </DragDropContext>
+      </div>
+
+      <AddDealModal
+        open={addModalOpen}
+        onClose={() => setAddModalOpen(false)}
+        onCreated={fetchDeals}
+        users={users}
+        currentUserId={currentUserId}
+      />
+    </div>
   );
 }

@@ -1,28 +1,17 @@
 "use client";
-import { cn, getInitials } from "@/lib/utils";
-import type { Lead } from "@/lib/types";
-import { AlertOctagon, Flame, Snowflake, Thermometer } from "lucide-react";
+import { cn, formatCurrency, getInitials } from "@/lib/utils";
+import type { Deal } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 
 interface KanbanCardProps {
-  lead: Lead;
+  deal: Deal;
   isDragging: boolean;
   onClick: () => void;
 }
 
-const TYPE_ICONS = {
-  hot: <Flame className="h-3 w-3 text-red-500" />,
-  warm: <Thermometer className="h-3 w-3 text-amber-500" />,
-  cold: <Snowflake className="h-3 w-3 text-blue-400" />,
-};
-
-export function KanbanCard({ lead, isDragging, onClick }: KanbanCardProps) {
-  const contactName =
-    [lead.first_name, lead.last_name].filter(Boolean).join(" ") || null;
-  const ownerName = lead.owner?.full_name;
-  const daysInStage = formatDistanceToNow(new Date(lead.updated_at), {
-    addSuffix: false,
-  });
+export function KanbanCard({ deal, isDragging, onClick }: KanbanCardProps) {
+  const ownerName = deal.owner?.full_name;
+  const daysInStage = formatDistanceToNow(new Date(deal.updated_at), { addSuffix: false });
 
   return (
     <div
@@ -33,26 +22,32 @@ export function KanbanCard({ lead, isDragging, onClick }: KanbanCardProps) {
         isDragging && "shadow-lg rotate-1 border-indigo-400"
       )}
     >
-      {/* Business name */}
-      <div className="flex items-start justify-between gap-1 mb-1.5">
-        <p className="text-sm font-medium text-slate-900 leading-tight line-clamp-2">
-          {lead.business_name}
-        </p>
-        <div className="flex items-center gap-1 shrink-0">
-          {lead.lead_type && TYPE_ICONS[lead.lead_type]}
-          {lead.do_not_approach && (
-            <AlertOctagon className="h-3 w-3 text-red-500" />
-          )}
-        </div>
-      </div>
+      {/* Title */}
+      <p className="text-sm font-medium text-slate-900 leading-tight line-clamp-2 mb-1">
+        {deal.title}
+      </p>
 
-      {/* Contact */}
-      {contactName && (
-        <p className="text-xs text-slate-500 mb-1.5">{contactName}</p>
+      {/* Company */}
+      {deal.company_name && (
+        <p className="text-xs text-slate-500 mb-1 truncate">{deal.company_name}</p>
+      )}
+
+      {/* Value */}
+      {deal.value && deal.value > 0 && (
+        <p className="text-xs font-semibold text-indigo-600 mb-2">
+          {formatCurrency(deal.value, deal.currency)}
+        </p>
+      )}
+
+      {/* Service */}
+      {deal.service && (
+        <span className="inline-block text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded mb-2">
+          {deal.service}
+        </span>
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between mt-2">
+      <div className="flex items-center justify-between mt-1">
         <span className="text-xs text-slate-400">{daysInStage} ago</span>
         {ownerName ? (
           <span
@@ -62,7 +57,7 @@ export function KanbanCard({ lead, isDragging, onClick }: KanbanCardProps) {
             {getInitials(ownerName)}
           </span>
         ) : (
-          <span className="text-xs text-slate-300">Unassigned</span>
+          <span className="text-xs text-slate-300">—</span>
         )}
       </div>
     </div>
