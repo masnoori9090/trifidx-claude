@@ -14,7 +14,7 @@ import type { Deal, User } from "@/lib/types";
 
 const STAGE_COLORS: Record<string, string> = {
   discovery: "bg-slate-100 text-slate-700",
-  proposal: "bg-violet-100 text-violet-700",
+  proposal: "bg-zinc-100 text-zinc-700",
   negotiation: "bg-amber-100 text-amber-700",
   contract: "bg-blue-100 text-blue-700",
   closed_won: "bg-green-100 text-green-700",

@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-zinc-900 rounded-xl mb-4">
             <span className="text-white font-bold text-lg">T</span>
           </div>
           <h1 className="text-2xl font-semibold text-slate-900">Reset password</h1>
@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
               </p>
               <Link
                 href="/login"
-                className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-700 font-medium mt-2"
+                className="inline-flex items-center gap-1 text-sm text-zinc-700 hover:text-zinc-900 font-medium mt-2"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Back to login

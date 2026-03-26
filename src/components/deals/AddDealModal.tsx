@@ -100,7 +100,7 @@ export function AddDealModal({ open, onClose, onCreated, users, currentUserId }:
           {/* Quick Start Templates */}
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+              <Sparkles className="h-3.5 w-3.5 text-zinc-500" />
               <span className="text-xs font-medium text-slate-600">Quick Start with Template</span>
             </div>
             <div className="flex flex-wrap gap-2">

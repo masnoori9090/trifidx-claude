@@ -204,17 +204,17 @@ export function LeadDetail({
           {/* Quick contact links */}
           <div className="flex items-center gap-3 text-slate-500">
             {lead.email && (
-              <a href={`mailto:${lead.email}`} className="hover:text-indigo-600" title={lead.email}>
+              <a href={`mailto:${lead.email}`} className="hover:text-zinc-700" title={lead.email}>
                 <Mail className="h-4 w-4" />
               </a>
             )}
             {lead.phone && (
-              <a href={`tel:${lead.phone}`} className="hover:text-indigo-600" title={lead.phone}>
+              <a href={`tel:${lead.phone}`} className="hover:text-zinc-700" title={lead.phone}>
                 <Phone className="h-4 w-4" />
               </a>
             )}
             {lead.website && (
-              <a href={lead.website} target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600" title={lead.website}>
+              <a href={lead.website} target="_blank" rel="noopener noreferrer" className="hover:text-zinc-700" title={lead.website}>
                 <Globe className="h-4 w-4" />
               </a>
             )}
@@ -223,7 +223,7 @@ export function LeadDetail({
                 href={`https://instagram.com/${lead.instagram_handle.replace("@", "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-indigo-600"
+                className="hover:text-zinc-700"
                 title={lead.instagram_handle}
               >
                 <AtSign className="h-4 w-4" />

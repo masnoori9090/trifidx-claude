@@ -21,7 +21,7 @@ const ACTION_COLORS: Record<string, string> = {
   created: "bg-green-500",
   updated: "bg-blue-500",
   deleted: "bg-red-500",
-  claimed: "bg-indigo-500",
+  claimed: "bg-zinc-700",
   unclaimed: "bg-slate-400",
   status_changed: "bg-amber-500",
 };

@@ -137,10 +137,10 @@ export const DEAL_STAGE_DOT_COLORS: Record<string, string> = {
 };
 
 export const EVENT_TYPE_COLORS: Record<string, string> = {
-  meeting: "bg-indigo-500",
-  phone_call: "bg-green-500",
-  follow_up: "bg-amber-500",
-  demo: "bg-purple-500",
+  meeting: "bg-zinc-900",
+  phone_call: "bg-zinc-600",
+  follow_up: "bg-zinc-500",
+  demo: "bg-zinc-700",
   other: "bg-slate-500",
 };
 

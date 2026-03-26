@@ -112,11 +112,11 @@ function ClientCard({ client, onClick }: { client: Lead; onClick: () => void }) 
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-indigo-300 hover:shadow-sm transition-all"
+      className="bg-white rounded-xl border border-slate-200 p-4 cursor-pointer hover:border-zinc-400 hover:shadow-sm transition-all"
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className="h-10 w-10 rounded-lg bg-indigo-100 flex items-center justify-center">
-          <Building2 className="h-5 w-5 text-indigo-600" />
+        <div className="h-10 w-10 rounded-lg bg-zinc-100 flex items-center justify-center">
+          <Building2 className="h-5 w-5 text-zinc-600" />
         </div>
         <div className="min-w-0">
           <p className="font-medium text-slate-900 text-sm truncate">{client.business_name}</p>

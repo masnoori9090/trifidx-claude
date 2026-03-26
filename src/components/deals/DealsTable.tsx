@@ -6,7 +6,7 @@ import type { Deal } from "@/lib/types";
 
 const STAGE_COLORS: Record<string, string> = {
   discovery: "bg-slate-100 text-slate-700",
-  proposal: "bg-violet-100 text-violet-700",
+  proposal: "bg-zinc-100 text-zinc-700",
   negotiation: "bg-amber-100 text-amber-700",
   contract: "bg-blue-100 text-blue-700",
   closed_won: "bg-green-100 text-green-700",
@@ -75,7 +75,7 @@ export function DealsTable({ deals, loading, onRowClick }: DealsTableProps) {
               <div className="flex items-center gap-1.5">
                 <div className="flex-1 max-w-[60px] bg-slate-200 rounded-full h-1.5">
                   <div
-                    className="bg-indigo-500 h-1.5 rounded-full"
+                    className="bg-zinc-700 h-1.5 rounded-full"
                     style={{ width: `${deal.probability}%` }}
                   />
                 </div>
@@ -86,7 +86,7 @@ export function DealsTable({ deals, loading, onRowClick }: DealsTableProps) {
             <td className="px-4 py-3">
               {deal.owner ? (
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-medium">
+                  <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-zinc-100 text-zinc-700 text-xs font-medium">
                     {getInitials(deal.owner.full_name)}
                   </span>
                   <span className="text-xs text-slate-600 truncate max-w-[80px]">{deal.owner.full_name}</span>

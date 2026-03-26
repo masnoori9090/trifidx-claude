@@ -147,7 +147,7 @@ export function SettingsClient({ users: initialUsers }: SettingsClientProps) {
             className={cn(
               "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors",
               activeTab === key
-                ? "border-indigo-600 text-indigo-600"
+                ? "border-zinc-900 text-zinc-900"
                 : "border-transparent text-slate-500 hover:text-slate-700"
             )}
           >
@@ -163,7 +163,7 @@ export function SettingsClient({ users: initialUsers }: SettingsClientProps) {
             <h2 className="text-sm font-semibold text-slate-900">Personal Information</h2>
             <div className="flex items-center gap-4">
               <Avatar className="h-14 w-14">
-                <AvatarFallback className="bg-indigo-100 text-indigo-700 text-lg font-semibold">
+                <AvatarFallback className="bg-zinc-100 text-zinc-700 text-lg font-semibold">
                   {getInitials(appUser?.full_name)}
                 </AvatarFallback>
               </Avatar>
@@ -234,7 +234,7 @@ export function SettingsClient({ users: initialUsers }: SettingsClientProps) {
           {/* Invite form */}
           <div className="bg-white rounded-xl border border-slate-200 p-6">
             <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-4">
-              <UserPlus className="h-4 w-4 text-indigo-600" />
+              <UserPlus className="h-4 w-4 text-zinc-700" />
               Invite New User
             </h2>
             <form onSubmit={handleInvite} className="flex flex-wrap items-end gap-3">
@@ -289,7 +289,7 @@ export function SettingsClient({ users: initialUsers }: SettingsClientProps) {
               {users.map((user) => (
                 <div key={user.id} className="flex items-center gap-4 px-5 py-3">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-indigo-100 text-indigo-700 text-xs font-medium">
+                    <AvatarFallback className="bg-zinc-100 text-zinc-700 text-xs font-medium">
                       {getInitials(user.full_name)}
                     </AvatarFallback>
                   </Avatar>

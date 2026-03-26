@@ -38,7 +38,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo / Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-zinc-900 rounded-xl mb-4">
             <span className="text-white font-bold text-lg">T</span>
           </div>
           <h1 className="text-2xl font-semibold text-slate-900">Trifid CRM</h1>
@@ -67,7 +67,7 @@ export default function LoginPage() {
                 <Label htmlFor="password">Password</Label>
                 <Link
                   href="/forgot-password"
-                  className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                  className="text-xs text-zinc-700 hover:text-zinc-900 font-medium"
                 >
                   Forgot password?
                 </Link>

@@ -17,11 +17,11 @@ interface CalendarViewProps {
 }
 
 const EVENT_DOTS: Record<string, string> = {
-  meeting: "bg-indigo-500",
-  phone_call: "bg-green-500",
-  follow_up: "bg-amber-500",
-  demo: "bg-purple-500",
-  other: "bg-slate-400",
+  meeting: "bg-zinc-900",
+  phone_call: "bg-zinc-600",
+  follow_up: "bg-zinc-500",
+  demo: "bg-zinc-700",
+  other: "bg-zinc-400",
 };
 
 export function CalendarView({ users }: CalendarViewProps) {
@@ -90,7 +90,7 @@ export function CalendarView({ users }: CalendarViewProps) {
                 onClick={() => setView(v)}
                 className={cn(
                   "px-3 py-1 text-xs font-medium capitalize transition-colors",
-                  view === v ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-slate-50"
+                  view === v ? "bg-zinc-900 text-white" : "text-slate-600 hover:bg-slate-50"
                 )}
               >
                 {v}
@@ -146,7 +146,7 @@ export function CalendarView({ users }: CalendarViewProps) {
                       <span
                         className={cn(
                           "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full",
-                          isToday(day) ? "bg-indigo-600 text-white" : inMonth ? "text-slate-700" : "text-slate-400"
+                          isToday(day) ? "bg-zinc-900 text-white" : inMonth ? "text-slate-700" : "text-slate-400"
                         )}
                       >
                         {format(day, "d")}
@@ -194,7 +194,7 @@ export function CalendarView({ users }: CalendarViewProps) {
               <div
                 key={event.id}
                 onClick={() => openEdit(event)}
-                className="flex items-start gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-indigo-300 hover:shadow-sm transition-all"
+                className="flex items-start gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-zinc-400 hover:shadow-sm transition-all"
               >
                 <div className={cn("mt-1 h-3 w-3 rounded-full shrink-0", EVENT_DOTS[event.type] || "bg-slate-400")} />
                 <div className="flex-1 min-w-0">
