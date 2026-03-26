@@ -189,11 +189,11 @@ export default function DashboardPage() {
           </p>
           <div className="flex items-center gap-6 mt-3">
             <div className="flex items-center gap-2 text-sm text-slate-600">
-              <Calendar className="h-4 w-4 text-indigo-500" />
+              <Calendar className="h-4 w-4 text-zinc-500" />
               <span><strong>{stats.meetingsToday}</strong> meetings today</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-slate-600">
-              <span className="h-2 w-2 rounded-full bg-amber-400" />
+              <span className="h-2 w-2 rounded-full bg-zinc-400" />
               <span><strong>0</strong> leads to follow up</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-slate-600">
@@ -205,14 +205,14 @@ export default function DashboardPage() {
 
         {/* Daily Mission Warning */}
         {stats.meetingsSet < 5 && (
-          <div className="bg-red-50 border border-red-200 rounded-xl px-5 py-3 flex items-center justify-between">
+          <div className="bg-zinc-50 border border-zinc-200 rounded-xl px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+              <AlertTriangle className="h-4 w-4 text-zinc-600 shrink-0" />
               <div>
-                <p className="text-sm font-medium text-red-800">
+                <p className="text-sm font-medium text-zinc-800">
                   ⚠️ You set {stats.meetingsSet} new meetings today
                 </p>
-                <p className="text-xs text-red-600">Set {5 - stats.meetingsSet} more to complete your daily mission</p>
+                <p className="text-xs text-zinc-600">Set {5 - stats.meetingsSet} more to complete your daily mission</p>
               </div>
             </div>
             <Link href="/calendar">
@@ -224,8 +224,8 @@ export default function DashboardPage() {
           </div>
         )}
         {stats.meetingsSet >= 5 && (
-          <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-3 flex items-center gap-3">
-            <span className="text-green-600 text-sm">✅ You are on track</span>
+          <div className="bg-zinc-50 border border-zinc-200 rounded-xl px-5 py-3 flex items-center gap-3">
+            <span className="text-zinc-700 text-sm">✅ You are on track</span>
           </div>
         )}
 
@@ -239,42 +239,42 @@ export default function DashboardPage() {
                 value: formatCurrency(stats.revenue, "AED"),
                 sub: null,
                 icon: DollarSign,
-                color: "bg-green-500",
+                color: "bg-zinc-500",
               },
               {
                 label: "My Meetings This Month",
                 value: stats.meetingsThisMonth.toString(),
                 sub: `${stats.meetingsCompleted} completed · 0.0/day avg`,
                 icon: Calendar,
-                color: "bg-blue-500",
+                color: "bg-zinc-700",
               },
               {
                 label: "My Leads",
                 value: stats.myLeads.toString(),
                 sub: `${stats.leadsConverted} converted this month`,
                 icon: Users,
-                color: "bg-orange-500",
+                color: "bg-zinc-600",
               },
               {
                 label: "My Deals",
                 value: `${stats.openDeals} open`,
                 sub: `AED 0 total · ${stats.dealsWon} won`,
                 icon: Briefcase,
-                color: "bg-purple-500",
+                color: "bg-zinc-800",
               },
               {
                 label: "My Quotations",
                 value: `${stats.quotationsSent} sent`,
                 sub: `${stats.quotationsApproved} approved · 0% rate`,
                 icon: FileText,
-                color: "bg-indigo-500",
+                color: "bg-zinc-800",
               },
               {
                 label: "My Clients",
                 value: stats.myClients.toString(),
                 sub: `${stats.clientsRenewal} up for renewal`,
                 icon: Building2,
-                color: "bg-teal-500",
+                color: "bg-zinc-700",
               },
             ].map(({ label, value, sub, icon: Icon, color }) => (
               <div key={label} className="bg-white border border-slate-200 rounded-xl p-4">
@@ -334,8 +334,8 @@ export default function DashboardPage() {
                 );
               })}
             </div>
-            <div className="mt-4 bg-green-50 rounded-lg py-2 px-3 text-center">
-              <p className="text-xs text-green-700">
+            <div className="mt-4 bg-zinc-50 rounded-lg py-2 px-3 text-center">
+              <p className="text-xs text-zinc-700">
                 {stats.meetingsSet >= 5 ? "✅ You are on track" : `⚠️ Set ${5 - stats.meetingsSet} more meetings`}
               </p>
             </div>
@@ -345,7 +345,7 @@ export default function DashboardPage() {
           <div className="bg-white border border-slate-200 rounded-xl p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Trophy className="h-4 w-4 text-amber-500" />
+                <Trophy className="h-4 w-4 text-zinc-500" />
                 <h3 className="text-sm font-semibold text-slate-900">Leaderboard</h3>
               </div>
               <div className="flex rounded-lg border border-slate-200 overflow-hidden">
@@ -367,7 +367,7 @@ export default function DashboardPage() {
                 {leaderboard.map((entry, i) => (
                   <div key={entry.id} className="flex items-center gap-3">
                     <span className="text-xs font-bold text-slate-400 w-4">{i + 1}</span>
-                    <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold shrink-0">
+                    <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-zinc-100 text-zinc-700 text-xs font-semibold shrink-0">
                       {entry.full_name[0]?.toUpperCase()}
                     </span>
                     <span className="flex-1 text-sm text-slate-700 truncate">{entry.full_name}</span>
@@ -398,7 +398,7 @@ export default function DashboardPage() {
         <div className="bg-white border border-slate-200 rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-slate-900">My Pipeline</h3>
-            <Link href="/pipeline" className="text-xs text-indigo-600 hover:underline flex items-center gap-1">
+            <Link href="/pipeline" className="text-xs text-zinc-900 hover:underline flex items-center gap-1">
               View All <TrendingUp className="h-3 w-3" />
             </Link>
           </div>
@@ -409,7 +409,7 @@ export default function DashboardPage() {
               {pipelineDeals.map((deal) => (
                 <div key={deal.title} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
                   <p className="text-sm text-slate-700 truncate flex-1">{deal.title}</p>
-                  <span className="text-xs text-indigo-600 font-medium ml-4">
+                  <span className="text-xs text-zinc-900 font-medium ml-4">
                     {deal.value ? formatCurrency(deal.value, deal.currency) : "—"}
                   </span>
                 </div>
@@ -431,7 +431,7 @@ export default function DashboardPage() {
                 <XAxis type="number" tick={{ fontSize: 11 }} />
                 <YAxis type="category" dataKey="country" tick={{ fontSize: 11 }} width={80} />
                 <Tooltip formatter={(v) => [v, "Leads"]} />
-                <Bar dataKey="count" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="count" fill="#18181b" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

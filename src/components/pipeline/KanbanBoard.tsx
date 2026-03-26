@@ -30,13 +30,26 @@ const STAGES: DealStage[] = [
 interface KanbanBoardProps {
   users: Partial<User>[];
   currentUserId?: string;
+  initialDeals?: Deal[];
 }
 
 type DealsByStage = Record<string, Deal[]>;
 
-export function KanbanBoard({ users, currentUserId }: KanbanBoardProps) {
-  const [dealsByStage, setDealsByStage] = useState<DealsByStage>({});
-  const [loading, setLoading] = useState(true);
+function groupByStage(deals: Deal[]): DealsByStage {
+  const grouped: DealsByStage = {};
+  STAGES.forEach((s) => (grouped[s] = []));
+  deals.forEach((deal) => {
+    const stage = deal.stage as DealStage;
+    if (grouped[stage]) grouped[stage].push(deal);
+  });
+  return grouped;
+}
+
+export function KanbanBoard({ users, currentUserId, initialDeals }: KanbanBoardProps) {
+  const [dealsByStage, setDealsByStage] = useState<DealsByStage>(
+    initialDeals ? groupByStage(initialDeals) : {}
+  );
+  const [loading, setLoading] = useState(!initialDeals);
   const [viewFilter, setViewFilter] = useState<"mine" | "all">("mine");
   const [addModalOpen, setAddModalOpen] = useState(false);
 
@@ -53,13 +66,7 @@ export function KanbanBoard({ users, currentUserId }: KanbanBoardProps) {
     }
 
     const { data } = await query;
-    const grouped: DealsByStage = {};
-    STAGES.forEach((s) => (grouped[s] = []));
-    (data || []).forEach((deal) => {
-      const stage = deal.stage as DealStage;
-      if (grouped[stage]) grouped[stage].push(deal as Deal);
-    });
-    setDealsByStage(grouped);
+    setDealsByStage(groupByStage((data || []) as Deal[]));
     setLoading(false);
   }, [viewFilter, currentUserId]);
 
@@ -219,7 +226,7 @@ export function KanbanBoard({ users, currentUserId }: KanbanBoardProps) {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`flex-1 space-y-2 min-h-[60px] rounded-lg p-1 transition-colors ${snapshot.isDraggingOver ? "bg-indigo-50" : ""}`}
+                        className={`flex-1 space-y-2 min-h-[60px] rounded-lg p-1 transition-colors ${snapshot.isDraggingOver ? "bg-zinc-100" : ""}`}
                       >
                         {deals.map((deal, index) => (
                           <Draggable key={deal.id} draggableId={deal.id} index={index}>

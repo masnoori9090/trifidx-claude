@@ -111,8 +111,8 @@ export function AddDealModal({ open, onClose, onCreated, users, currentUserId }:
                   onClick={() => applyTemplate(t)}
                   className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                     selectedTemplate === t
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600"
+                      ? "bg-zinc-900 text-white border-zinc-900"
+                      : "border-slate-200 text-slate-600 hover:border-zinc-400 hover:text-zinc-900"
                   }`}
                 >
                   {t}

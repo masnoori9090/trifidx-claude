@@ -18,8 +18,8 @@ export function KanbanCard({ deal, isDragging, onClick }: KanbanCardProps) {
       onClick={onClick}
       className={cn(
         "bg-white rounded-lg border border-slate-200 p-3 cursor-pointer select-none transition-all",
-        "hover:border-indigo-300 hover:shadow-sm",
-        isDragging && "shadow-lg rotate-1 border-indigo-400"
+        "hover:border-zinc-400 hover:shadow-sm",
+        isDragging && "shadow-lg rotate-1 border-zinc-600"
       )}
     >
       {/* Title */}
@@ -34,7 +34,7 @@ export function KanbanCard({ deal, isDragging, onClick }: KanbanCardProps) {
 
       {/* Value */}
       {deal.value && deal.value > 0 && (
-        <p className="text-xs font-semibold text-indigo-600 mb-2">
+        <p className="text-xs font-semibold text-zinc-900 mb-2">
           {formatCurrency(deal.value, deal.currency)}
         </p>
       )}
@@ -51,7 +51,7 @@ export function KanbanCard({ deal, isDragging, onClick }: KanbanCardProps) {
         <span className="text-xs text-slate-400">{daysInStage} ago</span>
         {ownerName ? (
           <span
-            className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-semibold"
+            className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-zinc-200 text-zinc-800 text-[10px] font-semibold"
             title={ownerName}
           >
             {getInitials(ownerName)}

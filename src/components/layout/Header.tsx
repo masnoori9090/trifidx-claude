@@ -22,7 +22,7 @@ export function Header({ title, subtitle }: HeaderProps) {
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
         <Input
           placeholder="Search…"
-          className="pl-8 h-8 text-sm bg-slate-50 border-slate-200 focus-visible:ring-indigo-500"
+          className="pl-8 h-8 text-sm bg-slate-50 border-slate-200 focus-visible:ring-zinc-900"
         />
       </div>
 

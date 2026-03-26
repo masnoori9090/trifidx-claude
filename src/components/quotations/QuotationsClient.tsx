@@ -191,7 +191,7 @@ function QuotationCard({ quotation, onRefetch }: { quotation: Quotation; onRefet
           {quotation.status === "draft" ? (
             <Button
               size="sm"
-              className="h-8 text-xs gap-1 bg-green-600 hover:bg-green-700"
+              className="h-8 text-xs gap-1 bg-zinc-900 hover:bg-black"
               onClick={handleApprove}
               disabled={approving}
             >

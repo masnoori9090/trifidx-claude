@@ -32,7 +32,7 @@ export function UserMenu() {
         <button className="flex items-center gap-2 rounded-md p-1 hover:bg-slate-100 transition-colors outline-none">
           <Avatar className="h-7 w-7">
             <AvatarImage src={appUser?.avatar_url || undefined} alt={displayName} />
-            <AvatarFallback className="bg-indigo-100 text-indigo-700 text-xs font-semibold">
+            <AvatarFallback className="bg-zinc-100 text-zinc-800 text-xs font-semibold">
               {getInitials(displayName)}
             </AvatarFallback>
           </Avatar>
@@ -50,7 +50,7 @@ export function UserMenu() {
         <DropdownMenuLabel className="font-normal py-2">
           <p className="font-semibold text-sm truncate">{displayName}</p>
           <p className="text-xs text-muted-foreground truncate">{email}</p>
-          {role && <p className="text-xs text-indigo-600 capitalize mt-0.5">{role}</p>}
+          {role && <p className="text-xs text-zinc-900 capitalize mt-0.5">{role}</p>}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push("/settings")}>

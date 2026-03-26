@@ -70,13 +70,13 @@ export const LEAD_STATUS_LABELS: Record<string, string> = {
 };
 
 export const LEAD_STATUS_COLORS: Record<string, string> = {
-  new: "bg-slate-100 text-slate-700",
-  contacted: "bg-blue-100 text-blue-700",
-  qualified: "bg-cyan-100 text-cyan-700",
-  proposal: "bg-violet-100 text-violet-700",
-  negotiation: "bg-amber-100 text-amber-700",
-  closed_won: "bg-green-100 text-green-700",
-  closed_lost: "bg-red-100 text-red-700",
+  new: "bg-zinc-100 text-zinc-700",
+  contacted: "bg-zinc-200 text-zinc-800",
+  qualified: "bg-zinc-800 text-zinc-100",
+  proposal: "bg-zinc-700 text-zinc-100",
+  negotiation: "bg-zinc-900 text-white",
+  closed_won: "bg-black text-white",
+  closed_lost: "bg-zinc-400 text-white",
 };
 
 export const LEAD_SOURCE_LABELS: Record<string, string> = {
@@ -89,12 +89,12 @@ export const LEAD_SOURCE_LABELS: Record<string, string> = {
 };
 
 export const LEAD_SOURCE_COLORS: Record<string, string> = {
-  inbound: "bg-green-100 text-green-700",
-  outbound: "bg-indigo-100 text-indigo-700",
-  referral: "bg-purple-100 text-purple-700",
-  website: "bg-blue-100 text-blue-700",
-  social_media: "bg-pink-100 text-pink-700",
-  other: "bg-slate-100 text-slate-600",
+  inbound: "bg-zinc-900 text-white",
+  outbound: "bg-zinc-800 text-zinc-100",
+  referral: "bg-zinc-700 text-zinc-100",
+  website: "bg-zinc-600 text-white",
+  social_media: "bg-zinc-500 text-white",
+  other: "bg-zinc-100 text-zinc-600",
 };
 
 export const DEAL_STAGE_LABELS: Record<string, string> = {
@@ -111,29 +111,29 @@ export const DEAL_STAGE_LABELS: Record<string, string> = {
 };
 
 export const DEAL_STAGE_COLORS: Record<string, string> = {
-  new_lead: "text-slate-600 bg-slate-100",
-  attempting_contact: "text-blue-600 bg-blue-100",
-  contacted: "text-blue-700 bg-blue-100",
-  qualified: "text-violet-700 bg-violet-100",
-  meeting_booked: "text-amber-700 bg-amber-100",
-  meeting_completed: "text-orange-700 bg-orange-100",
-  proposal_sent: "text-orange-700 bg-orange-100",
-  negotiation: "text-red-700 bg-red-100",
-  closed_won: "text-green-700 bg-green-100",
-  closed_lost: "text-red-700 bg-red-100",
+  new_lead: "text-zinc-600 bg-zinc-100",
+  attempting_contact: "text-zinc-700 bg-zinc-200",
+  contacted: "text-zinc-700 bg-zinc-200",
+  qualified: "text-zinc-100 bg-zinc-700",
+  meeting_booked: "text-zinc-100 bg-zinc-700",
+  meeting_completed: "text-white bg-zinc-800",
+  proposal_sent: "text-white bg-zinc-800",
+  negotiation: "text-white bg-zinc-900",
+  closed_won: "text-white bg-black",
+  closed_lost: "text-white bg-zinc-400",
 };
 
 export const DEAL_STAGE_DOT_COLORS: Record<string, string> = {
-  new_lead: "bg-slate-400",
-  attempting_contact: "bg-blue-400",
-  contacted: "bg-blue-500",
-  qualified: "bg-violet-500",
-  meeting_booked: "bg-amber-400",
-  meeting_completed: "bg-orange-500",
-  proposal_sent: "bg-orange-500",
-  negotiation: "bg-red-500",
-  closed_won: "bg-green-500",
-  closed_lost: "bg-red-700",
+  new_lead: "bg-zinc-300",
+  attempting_contact: "bg-zinc-400",
+  contacted: "bg-zinc-500",
+  qualified: "bg-zinc-600",
+  meeting_booked: "bg-zinc-600",
+  meeting_completed: "bg-zinc-700",
+  proposal_sent: "bg-zinc-700",
+  negotiation: "bg-zinc-900",
+  closed_won: "bg-black",
+  closed_lost: "bg-zinc-400",
 };
 
 export const EVENT_TYPE_COLORS: Record<string, string> = {
