@@ -17,11 +17,12 @@ import type { Quotation, User } from "@/lib/types";
 
 interface QuotationsClientProps {
   users: Partial<User>[];
+  initialQuotations?: Quotation[];
 }
 
-export function QuotationsClient({ users }: QuotationsClientProps) {
+export function QuotationsClient({ users, initialQuotations }: QuotationsClientProps) {
   const { authUser } = useAuth();
-  const { quotations, loading, error, setSearch, setSalespersonFilter, setCountryFilter, refetch } = useQuotations(authUser?.id);
+  const { quotations, loading, error, setSearch, setSalespersonFilter, setCountryFilter, refetch } = useQuotations(authUser?.id, initialQuotations);
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   return (

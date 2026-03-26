@@ -15,14 +15,16 @@ import type { Lead, User } from "@/lib/types";
 
 interface LeadsClientProps {
   users: Partial<User>[];
+  initialLeads?: Lead[];
+  initialTotal?: number;
 }
 
-export function LeadsClient({ users }: LeadsClientProps) {
+export function LeadsClient({ users, initialLeads, initialTotal }: LeadsClientProps) {
   const { authUser } = useAuth();
   const {
     leads, total, loading, error, filters, pageSize,
     updateSearch, updateFilter, setPage, refetch,
-  } = useLeads(authUser?.id);
+  } = useLeads(authUser?.id, initialLeads, initialTotal);
 
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);

@@ -10,13 +10,15 @@ import type { Lead, User } from "@/lib/types";
 
 interface ClientsClientProps {
   users: Partial<User>[];
+  initialClients?: Lead[];
 }
 
-export function ClientsClient({ users }: ClientsClientProps) {
-  const [clients, setClients] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
+export function ClientsClient({ users, initialClients }: ClientsClientProps) {
+  const [clients, setClients] = useState<Lead[]>(initialClients || []);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Lead | null>(null);
+  const hasInitialData = useState(() => !!initialClients)[0];
 
   const fetchClients = useCallback(async () => {
     setLoading(true);
@@ -40,9 +42,11 @@ export function ClientsClient({ users }: ClientsClientProps) {
   }, [search]);
 
   useEffect(() => {
-    const t = setTimeout(fetchClients, 300);
+    // Skip first fetch if we have initial server data and no search active
+    if (hasInitialData && !search) return;
+    const t = setTimeout(fetchClients, search ? 300 : 0);
     return () => clearTimeout(t);
-  }, [fetchClients]);
+  }, [fetchClients, search, hasInitialData]);
 
   return (
     <div className="flex flex-col h-full">

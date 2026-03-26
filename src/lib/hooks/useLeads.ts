@@ -15,22 +15,31 @@ export interface LeadsFilters {
 
 const PAGE_SIZE = 50;
 
-export function useLeads(userId: string | undefined) {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
+const DEFAULT_FILTERS: LeadsFilters = {
+  tab: "everyone",
+  search: "",
+  status: "",
+  source: "",
+  country: "",
+  owner_id: "",
+  page: 0,
+};
+
+export function useLeads(
+  userId: string | undefined,
+  initialLeads?: Lead[],
+  initialTotal?: number
+) {
+  const [leads, setLeads] = useState<Lead[]>(initialLeads || []);
+  const [total, setTotal] = useState(initialTotal || 0);
+  // If we have initial data, start not-loading so we don't trigger a fetch immediately
+  const [loading, setLoading] = useState(!initialLeads);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<LeadsFilters>({
-    tab: "everyone",
-    search: "",
-    status: "",
-    source: "",
-    country: "",
-    owner_id: "",
-    page: 0,
-  });
+  const [filters, setFilters] = useState<LeadsFilters>(DEFAULT_FILTERS);
 
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
+  // Track whether the initial server data has been used (skip first fetch if filters are default)
+  const hasInitialData = useRef(!!initialLeads);
 
   const fetchLeads = useCallback(async (f: LeadsFilters) => {
     setLoading(true);
@@ -99,6 +108,11 @@ export function useLeads(userId: string | undefined) {
   const setPage = (page: number) => setFilters((f) => ({ ...f, page }));
 
   useEffect(() => {
+    // Skip the first fetch if we have server-prefetched data and filters are still default
+    if (hasInitialData.current) {
+      hasInitialData.current = false;
+      return;
+    }
     fetchLeads(filters);
   }, [filters, fetchLeads]);
 
